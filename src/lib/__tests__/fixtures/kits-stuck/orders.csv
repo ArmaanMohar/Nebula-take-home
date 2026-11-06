@@ -1,0 +1,9 @@
+order_id,created_at,customer_id,product,country,status,is_test
+ord_noev,2026-01-01T00:00:00Z,cus_1,wgs_30x,US,paid,false
+ord_refund,2026-01-01T00:00:00Z,cus_2,wgs_30x,US,refunded,false
+ord_cancel,2026-01-01T00:00:00Z,cus_3,wgs_30x,US,cancelled,false
+ord_test,2026-01-01T00:00:00Z,cus_4,wgs_30x,US,paid,true
+ord_up,2026-01-01T00:00:00Z,cus_5,upload_only,US,paid,false
+ord_fresh,2026-01-19T00:00:00Z,cus_6,wgs_30x,US,paid,false
+ord_cust,2025-10-30T00:00:00Z,cus_7,wgs_100x,US,paid,false
+ord_ok,2026-01-15T00:00:00Z,cus_8,wgs_30x,US,paid,false

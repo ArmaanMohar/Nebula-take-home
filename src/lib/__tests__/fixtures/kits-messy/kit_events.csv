@@ -1,0 +1,13 @@
+event_id,order_id,kit_id,event_type,occurred_at,source
+m1,ord_m,kit_m,kit_shipped,2026-01-02T00:00:00Z,system
+m2,ord_m,kit_m,kit_delivered,2026-01-05T00:00:00Z,carrier
+m3,ord_m,kit_m,sample_received,2026-01-25T00:00:00Z,lab
+m4,ord_m,kit_m,qc_passed,2026-01-27T00:00:00Z,lab
+o1,ord_o,kit_o,kit_shipped,2026-01-02T00:00:00Z,system
+o2,ord_o,kit_o,kit_delivered,2026-01-04T00:00:00Z,carrier
+o3,ord_o,kit_o,kit_delivered,2026-01-06T00:00:00Z,carrier
+o4,ord_o,kit_o,sample_received,2026-01-10T00:00:00Z,lab
+o5,ord_o,kit_o,sample_mailed,2026-01-12T00:00:00Z,carrier
+a1,ord_a,kit_a,kit_shipped,2026-01-02T00:00:00Z,system
+a2,ord_a,kit_a,kit_replaced,2026-01-03T00:00:00Z,system
+a3,ord_a,kit_a,kit_delivered,2026-01-05T00:00:00Z,carrier

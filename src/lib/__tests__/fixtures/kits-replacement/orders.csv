@@ -1,0 +1,3 @@
+order_id,created_at,customer_id,product,country,status,is_test
+ord_r,2026-03-01T00:00:00Z,cus_1,wgs_30x,US,paid,false
+ord_w,2026-03-01T00:00:00Z,cus_2,wgs_100x,US,paid,false

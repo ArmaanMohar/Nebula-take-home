@@ -1,4 +1,4 @@
-import type { CsvKind, EventSource, EventType, OrderStatus, Product } from './config';
+import type { CsvKind, EventSource, EventType, OrderStatus, Product, StageId } from './config';
 
 /** One CSV data row exactly as read: normalized header → untouched string value. */
 export interface RawRow {
@@ -113,4 +113,63 @@ export interface DataQualityReport {
   parseWarnings: Record<CsvKind, ParseWarning[]>;
   excluded: Record<ExclusionReason, ReasonBucket>;
   flagged: Record<FlagReason, ReasonBucket>;
+}
+
+export type KitState = 'open' | 'complete' | 'replaced';
+
+export interface Kit {
+  kitId: string;
+  orderId: string;
+  /** All kept events, sorted by instant (ties: pipeline rank, then file row). */
+  events: KitEvent[];
+  /** First occurrence of each event type, up to and including kit_replaced. */
+  firstAt: Partial<Record<EventType, number>>;
+  state: KitState;
+  /** Latest pipeline event that defines current stage (highest rank; ties: latest instant). */
+  lastEvent: KitEvent;
+  replaces?: string;
+  replacedBy?: string;
+  /** Union of its events' flags, for display. */
+  flags: FlagReason[];
+}
+
+export type StageStatus = 'done_ok' | 'done_over' | 'open_ok' | 'open_over' | 'excluded';
+export type StageExclusion = 'missing_scan' | 'out_of_order' | 'negative_duration' | 'kit_closed';
+
+export interface StageInstance {
+  stageId: StageId;
+  /** Null for the ship stage of a kit that doesn't exist yet. */
+  kitId: string | null;
+  start?: number;
+  end?: number;
+  /** Fractional calendar days; for open stages, asOf − start. */
+  days?: number;
+  status: StageStatus;
+  excludedBy?: StageExclusion;
+}
+
+export type OrderState =
+  | 'not_in_pipeline' // upload_only
+  | 'awaiting_shipment'
+  | 'awaiting_replacement'
+  | 'in_progress'
+  | 'complete';
+
+export interface OrderModel {
+  order: Order;
+  /** Chain order: by first event instant. */
+  kits: Kit[];
+  activeKit?: Kit;
+  state: OrderState;
+  /** All stage instances across kits, chain order then pipeline order. */
+  stages: StageInstance[];
+  /** The stage currently being waited on, if any. */
+  openStage?: StageInstance;
+  lastEventAt?: number;
+  /** created_at → report_ready on the final kit. */
+  turnaroundDays?: number;
+  /** Paid, kit product: counts toward durations/SLA. */
+  inPipelineStats: boolean;
+  /** inPipelineStats, non-test, open stage over target. */
+  stuck: boolean;
 }

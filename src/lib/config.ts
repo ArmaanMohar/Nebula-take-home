@@ -88,3 +88,19 @@ export const STAGES: readonly StageDef[] = [
 ];
 
 export const STAGE_BY_ID = Object.fromEntries(STAGES.map((s) => [s.id, s])) as Record<StageId, StageDef>;
+
+/** Stage a kit is waiting on, given its latest pipeline event. Null = terminal. */
+export const NEXT_STAGE_AFTER: Record<EventType, StageId | null> = {
+  kit_shipped: 'deliver',
+  kit_delivered: 'mail',
+  sample_mailed: 'receive',
+  sample_received: 'qc',
+  qc_passed: 'sequence',
+  qc_failed: 'replace',
+  sequencing_complete: 'report',
+  report_ready: null,
+  kit_replaced: null,
+};
+
+/** Stages whose end event can legitimately occur without the start event (no missing_scan). */
+export const OPTIONAL_START_STAGES: readonly StageId[] = ['replace'];

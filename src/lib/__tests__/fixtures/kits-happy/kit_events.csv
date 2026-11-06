@@ -1,0 +1,8 @@
+event_id,order_id,kit_id,event_type,occurred_at,source
+e1,ord_h,kit_h,kit_shipped,2026-01-02T00:00:00Z,system
+e2,ord_h,kit_h,kit_delivered,2026-01-05T00:00:00Z,carrier
+e3,ord_h,kit_h,sample_mailed,2026-01-15T00:00:00Z,carrier
+e4,ord_h,kit_h,sample_received,2026-01-20T00:00:00Z,lab
+e5,ord_h,kit_h,qc_passed,2026-01-22T00:00:00Z,lab
+e6,ord_h,kit_h,sequencing_complete,2026-02-10T00:00:00Z,lab
+e7,ord_h,kit_h,report_ready,2026-02-12T00:00:00Z,lab
