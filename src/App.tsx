@@ -5,6 +5,7 @@ import { fmtDateTime, fmtInt } from './components/format';
 import { applyFilters, filterOptions, overview, qualityTotals } from './lib/metrics';
 import { useDataset } from './state/dataset';
 import { useUrlState, type View } from './state/filters';
+import { Durations } from './views/Durations';
 import { Overview } from './views/Overview';
 
 const TABS: { view: View; label: string }[] = [
@@ -112,6 +113,8 @@ export default function App() {
             <p className="text-sm text-slate-500">{loading ? 'Loading data…' : 'Upload orders.csv and kit_events.csv to begin.'}</p>
           ) : view === 'overview' ? (
             <Overview models={filtered} onOpenStuck={() => navigate('stuck')} />
+          ) : view === 'durations' ? (
+            <Durations models={filtered} productFilter={filters.products} />
           ) : (
             <p className="text-sm text-slate-500">This view is not built yet.</p>
           )}
