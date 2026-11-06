@@ -7,6 +7,7 @@ import { useDataset } from './state/dataset';
 import { useUrlState, type View } from './state/filters';
 import { Durations } from './views/Durations';
 import { Overview } from './views/Overview';
+import { Stuck } from './views/Stuck';
 
 const TABS: { view: View; label: string }[] = [
   { view: 'overview', label: 'Overview' },
@@ -115,6 +116,8 @@ export default function App() {
             <Overview models={filtered} onOpenStuck={() => navigate('stuck')} />
           ) : view === 'durations' ? (
             <Durations models={filtered} productFilter={filters.products} />
+          ) : view === 'stuck' ? (
+            <Stuck models={filtered} asOf={dataset.asOf} onOpenOrder={(id) => navigate('order', id)} />
           ) : (
             <p className="text-sm text-slate-500">This view is not built yet.</p>
           )}

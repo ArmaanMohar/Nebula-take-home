@@ -10,6 +10,7 @@ import {
   qualitySummary,
   stageDurations,
   stuckCsv,
+  stuckBreakdown,
   stuckList,
   toCsv,
   type Filters,
@@ -103,6 +104,7 @@ describe('stuckList', () => {
     ]);
     expect(rows[0]!.daysOver).toBeCloseTo(33.1875 - 3);
     expect(rows[1]).toMatchObject({ kitId: 'k9', targetDays: 7 });
+    expect(stuckBreakdown(rows)).toEqual({ byOwner: { fulfillment: 1, carrier: 1 }, byStage: { ship: 1, deliver: 1 } });
   });
 });
 

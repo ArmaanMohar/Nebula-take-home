@@ -277,6 +277,17 @@ export function stuckList(models: OrderModel[]): StuckRow[] {
     .sort((a, b) => b.daysOver - a.daysOver || a.orderId.localeCompare(b.orderId));
 }
 
+/** Stuck row counts per owner and per stage, for the Stuck view's filters. */
+export function stuckBreakdown(rows: StuckRow[]) {
+  const byOwner: Partial<Record<Owner, number>> = {};
+  const byStage: Partial<Record<StageId, number>> = {};
+  for (const r of rows) {
+    byOwner[r.owner] = (byOwner[r.owner] ?? 0) + 1;
+    byStage[r.stageId] = (byStage[r.stageId] ?? 0) + 1;
+  }
+  return { byOwner, byStage };
+}
+
 // ---------- Order detail ----------
 
 export function findOrder(models: OrderModel[], orderId: string): OrderModel | undefined {

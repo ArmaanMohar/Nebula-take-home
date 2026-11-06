@@ -58,7 +58,8 @@ export type EventSource = (typeof SOURCES)[number];
 export const IS_TEST_TRUE = ['true', '1', 'yes', 'y', 't'] as const;
 export const IS_TEST_FALSE = ['false', '0', 'no', 'n', 'f', ''] as const;
 
-export type Owner = 'fulfillment' | 'carrier' | 'customer' | 'lab' | 'support';
+export const OWNERS = ['fulfillment', 'carrier', 'customer', 'lab', 'support'] as const;
+export type Owner = (typeof OWNERS)[number];
 
 export type StageId = 'ship' | 'deliver' | 'mail' | 'receive' | 'qc' | 'sequence' | 'report' | 'replace';
 
