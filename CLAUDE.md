@@ -47,23 +47,35 @@ AI_NOTES.md         running log of AI mistakes (see Workflow)
 
 ## Data decisions (change only with my approval; keep this table updated)
 
-> DRAFT. Confirm each row against the actual data in Plan step 1; propose changes, don't assume.
+> Confirmed against sample data in Plan step 1 (2026-11-06). Sample counts in parentheses.
 
-| Case                                                          | Decision                                                                                                                                                                                                                 |
-| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `is_test = true`                                              | Excluded by default; global toggle to include                                                                                                                                                                            |
-| `status` refunded / cancelled                                 | Counted in order volume and visible in order detail; excluded from stuck list and SLA/duration stats                                                                                                                     |
-| `product = upload_only`                                       | Counted in order volume; never enters the kit pipeline; not stuck for missing kit events                                                                                                                                 |
-| Exact duplicate events (same kit_id, event_type, occurred_at) | Deduped, counted in report                                                                                                                                                                                               |
-| Same stage event repeated at different times                  | Use FIRST occurrence for stage timing; flag the repeat                                                                                                                                                                   |
-| Events out of pipeline order (e.g. received before mailed)    | Keep event, flag kit; exclude the affected stage duration from stats                                                                                                                                                     |
-| Event with order_id not in orders.csv                         | Excluded, counted                                                                                                                                                                                                        |
-| Blank kit_id / unparseable timestamp                          | Excluded, counted                                                                                                                                                                                                        |
-| Event timestamp after asOf or before order created_at         | Flagged                                                                                                                                                                                                                  |
-| `kit_replaced`                                                | Closes the old kit (state: replaced, never stuck). Replacement kit = next kit_id on the same order whose first event is after the replaced event. Replacement kit's first stage is measured from the `kit_replaced` time |
-| `qc_failed` with no replacement                               | Open; owner = support; stuck if no replacement within QC target window                                                                                                                                                   |
-| Paid kit order with no events                                 | State "awaiting shipment"; stuck if > target for order→shipped                                                                                                                                                           |
-| Order-level turnaround                                        | order `created_at` → `report_ready` on the final kit                                                                                                                                                                     |
+| Case | Decision |
+| --- | --- |
+| `is_test` | `true/1/yes/y/t` = test, `false/0/no/n/f/blank` = not test (case-insensitive). Anything else → flag, exclude from pipeline math. Test orders excluded by default; global toggle to include (67) |
+| `status` refunded / cancelled | Counted in order volume and visible in order detail; excluded from stuck list and SLA/duration stats, even if they progressed (151 refunded / 33 cancelled with events) |
+| `product = upload_only` | Counted in order volume; never enters the kit pipeline; not stuck. If it has events → flag `upload_only_has_events`, exclude those events from pipeline math (0) |
+| Timestamp with no timezone | Parse as UTC; flag `naive_timestamp` (248) |
+| Duplicate events | Key = (kit_id, event_type, **parsed UTC instant**); event_id ignored. Deduped, counted (343 exact + 126 same instant in different tz notation) |
+| Same stage event repeated at different times | Use FIRST occurrence for stage timing; flag the repeat (0) |
+| Events out of pipeline order (e.g. received before mailed) | Order by parsed instant. Keep event, flag kit; exclude the affected stage duration from stats (0) |
+| Missing intermediate scan (e.g. no `sample_mailed` but `sample_received` exists) | Flag `missing_scan`; a stage duration is measured only when both its start and end events exist; kit still advances (55 no mailed, 28 no delivered) |
+| Event with order_id not in orders.csv | Excluded, counted (40) |
+| Blank kit_id / blank order_id / unparseable timestamp / unknown event_type | Excluded, counted (0) |
+| Duplicate `order_id` in orders.csv | Keep first, exclude the rest `duplicate_order` (0) |
+| Same kit_id on more than one order | Exclude events not matching the kit's first-seen order `kit_order_conflict` (0) |
+| Event timestamp after asOf or before order created_at | Flagged (0) |
+| `kit_replaced` | Closes the old kit (state: replaced, never stuck). Replacement kit = next kit_id on the same order whose first event is after the replaced event. Replacement kit's `kit_shipped` is measured from the `kit_replaced` time against the order→shipped target (205) |
+| `kit_replaced` with no successor kit yet | Order state "awaiting replacement shipment", owner fulfillment; stuck if > order→shipped target since `kit_replaced` (4) |
+| Events on a kit after its `kit_replaced` | Keep, flag `event_after_replaced`; kit stays closed (0) |
+| QC result | Received → QC ends at the first `qc_passed` or `qc_failed`. QC passed → sequencing measured only from `qc_passed` |
+| `qc_failed` with no replacement | Open; owner = support; stuck if no replacement within QC target window (0) |
+| Paid kit order with no events | State "awaiting shipment"; stuck if > target for order→shipped (3) |
+| Kit at `kit_delivered`, customer hasn't mailed | Counts as stuck after the delivered→mailed target, owner = customer; Stuck view has an owner filter (~278) |
+| Volume / current stage / finished | Volume = orders. Current stage = stage of each order's active (latest) kit. Finished = orders whose final kit is `report_ready` |
+| Order-level turnaround | order `created_at` → `report_ready` on the final kit |
+| Median / p90 | Linear interpolation (numpy default) |
+| Date filter | UTC calendar days on order `created_at` |
+| Turnaround colors | green = within target; yellow = completed over target; red = open over target (stuck); always with a day count |
 
 ## Kit state & stuck definition
 
