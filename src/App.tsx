@@ -6,6 +6,7 @@ import { applyFilters, filterOptions, overview, qualityTotals } from './lib/metr
 import { useDataset } from './state/dataset';
 import { useUrlState, type View } from './state/filters';
 import { Durations } from './views/Durations';
+import { OrderDetail } from './views/OrderDetail';
 import { Overview } from './views/Overview';
 import { Stuck } from './views/Stuck';
 
@@ -19,7 +20,7 @@ const TABS: { view: View; label: string }[] = [
 
 export default function App() {
   const { dataset, loading, errors, upload, dismissErrors } = useDataset();
-  const { view, filters, setFilters, resetFilters, navigate } = useUrlState();
+  const { view, filters, orderId, setFilters, resetFilters, navigate } = useUrlState();
   const fileInput = useRef<HTMLInputElement>(null);
 
   const models = dataset?.models;
@@ -118,6 +119,8 @@ export default function App() {
             <Durations models={filtered} productFilter={filters.products} />
           ) : view === 'stuck' ? (
             <Stuck models={filtered} asOf={dataset.asOf} onOpenOrder={(id) => navigate('order', id)} />
+          ) : view === 'order' ? (
+            <OrderDetail allModels={dataset.models} filtered={filtered} orderId={orderId} onOpenOrder={(id) => navigate('order', id)} />
           ) : (
             <p className="text-sm text-slate-500">This view is not built yet.</p>
           )}
