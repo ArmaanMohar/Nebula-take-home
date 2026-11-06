@@ -1,0 +1,10 @@
+order_id,created_at,customer_id,product,country,status,is_test
+m1,2026-01-01T00:00:00Z,cus_1,wgs_30x,US,paid,false
+m2,2026-01-01T00:00:00Z,cus_2,wgs_30x,GB,paid,false
+m3,2026-01-31T23:30:00-05:00,cus_3,wgs_100x,CA,paid,false
+m4,2026-01-01T00:00:00Z,cus_4,wgs_30x,US,refunded,false
+m5,2026-01-01T00:00:00Z,cus_5,wgs_30x,US,paid,true
+m6,2026-01-01T00:00:00Z,cus_6,wgs_30x,US,paid,false
+m7,2026-01-01T00:00:00Z,cus_7,upload_only,US,paid,false
+m8,2026-01-01T00:00:00Z,cus_8,wgs_100x,DE,cancelled,false
+m9,2026-01-01T00:00:00Z,"=HYPERLINK(""x"")",wgs_100x,US,paid,false
