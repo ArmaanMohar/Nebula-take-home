@@ -33,10 +33,28 @@ function TooltipBody({ active, payload, products }: { active?: boolean; payload?
           <div key={p} className="text-slate-700">
             <span className="mr-1 inline-block h-2 w-2 rounded-sm" style={{ background: PRODUCT_COLOR[p] }} />
             {p}: median {fmtDays(c.median)} · p90 {fmtDays(c.p90)} · n={fmtInt(c.n)}
-            {c.n > 0 && c.n < SMALL_N ? ' (small sample)' : ''}
+            {c.n > 0 && c.n < SMALL_N ? ` (faded: under ${SMALL_N} kits, median not reliable)` : ''}
           </div>
         );
       })}
+    </div>
+  );
+}
+
+/** Product swatches plus an explicit key for faded bars, so the fade is never left unexplained. */
+function ChartLegend({ products }: { products: KitProduct[] }) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pb-2 text-xs text-slate-600">
+      {products.map((p) => (
+        <span key={p} className="flex items-center gap-1.5">
+          <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: PRODUCT_COLOR[p] }} />
+          {p}
+        </span>
+      ))}
+      <span className="flex items-center gap-1.5">
+        <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: PRODUCT_COLOR[products[0] ?? 'wgs_30x'], opacity: SMALL_N_OPACITY }} />
+        Faded = fewer than {SMALL_N} completed kits in that stage, so the median is not reliable yet
+      </span>
     </div>
   );
 }
@@ -57,7 +75,7 @@ export function MedianDurationsChart({ rows, products }: { rows: DurationRow[]; 
         <XAxis type="number" tick={{ fontSize: 11, fill: TEXT_SECONDARY }} tickLine={false} axisLine={false} unit=" d" />
         <YAxis type="category" dataKey="label" width={AXIS_WIDTH} tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: TEXT_SECONDARY }} />
         <Tooltip content={<TooltipBody products={products} />} cursor={{ fill: '#f1f1ef' }} isAnimationActive={false} />
-        <Legend verticalAlign="top" align="left" iconType="square" wrapperStyle={{ fontSize: 12, color: TEXT_SECONDARY, paddingBottom: 4 }} />
+        <Legend verticalAlign="top" align="left" content={() => <ChartLegend products={products} />} />
         {products.map((p) => (
           <Bar key={p} dataKey={p} name={p} fill={PRODUCT_COLOR[p]} barSize={BAR_SIZE} radius={[0, 4, 4, 0]} isAnimationActive={false}>
             {data.map((d) => (

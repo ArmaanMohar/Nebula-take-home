@@ -44,7 +44,7 @@ export function Overview({ models, onOpenStuck }: Props) {
           label="Median turnaround"
           value={fmtDays(t.median)}
           muted={t.n < SMALL_N}
-          sub={`Order → report · p90 ${fmtDays(t.p90)} · n=${fmtInt(t.n)}`}
+          sub={`Order → report · p90 ${fmtDays(t.p90)} · n=${fmtInt(t.n)}${t.n < SMALL_N ? ` · greyed: under ${SMALL_N} finished orders, not reliable` : ''}`}
         />
         <StatTile
           label="Refunded / cancelled"

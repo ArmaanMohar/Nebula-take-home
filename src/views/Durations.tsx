@@ -18,7 +18,7 @@ function Cells({ c }: { c: DurationCell }) {
   const tone = small ? 'text-slate-400' : 'text-slate-900';
   return (
     <>
-      <td className={`border-l border-slate-100 px-2 py-1.5 text-right tabular-nums ${tone}`} title={small ? `Small sample (n < ${SMALL_N})` : undefined}>
+      <td className={`border-l border-slate-100 px-2 py-1.5 text-right tabular-nums ${tone}`} title={small ? `Only ${c.n} completed kit(s): too few for a reliable median` : undefined}>
         {fmtDays(c.median)}
       </td>
       <td className={`px-2 py-1.5 text-right tabular-nums ${tone}`}>{fmtDays(c.p90)}</td>
@@ -80,12 +80,16 @@ export function Durations({ models, productFilter }: Props) {
       <ul className="space-y-0.5 text-xs text-slate-500">
         <li>Calendar days. Median, p90 (linear interpolation) and % over target use completed stages only, on paid orders.</li>
         <li>Open now = kits currently in that stage as of the data date; "over" = already past target.</li>
-        <li>Stages with a missing or out-of-order scan are left out. Grey values: fewer than {SMALL_N} samples.</li>
+        <li>Stages with a missing or out-of-order scan are left out.</li>
+        <li>
+          <span className="text-slate-400">Grey values</span> are based on fewer than {SMALL_N} completed kits (n), so one unusual kit can swing
+          the median or p90. Treat them as indicative only.
+        </li>
         <li>A replacement kit&apos;s Order → Shipped is measured from the kit_replaced event.</li>
       </ul>
       <section className="rounded-md border border-slate-200 bg-white px-4 py-3">
         <h2 className="text-sm font-semibold text-slate-800">Median days per stage by product</h2>
-        <p className="mb-2 text-xs text-slate-500">Completed stages only. Faded bars: fewer than {SMALL_N} samples. Hover for p90 and n.</p>
+        <p className="mb-2 text-xs text-slate-500">Completed stages only. Hover a bar for p90 and sample size (n).</p>
         <MedianDurationsChart rows={rows} products={products} />
       </section>
     </div>

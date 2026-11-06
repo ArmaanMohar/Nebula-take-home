@@ -13,3 +13,9 @@ Running log of AI mistakes corrected by the developer.
 - **What I did:** After adding the current-stage chart, I told the developer to expect the Delivered bar (677) to be "much longer than the others" on the sample.
 - **What was wrong:** Report ready (`complete`) is the longest bar at 2,517. My own earlier sanity run printed `complete:2517`. I wrote the expectation from memory and didn't check it against that output.
 - **How it was caught:** The developer did manual QA on the sample data and reported the actual bar lengths.
+
+## 2026-11-06 12:02 — faded/grey small-sample styling left unexplained
+
+- **What I did:** In the Durations chart I faded bars with n < 5, and in the Durations table and the turnaround tile I greyed those values. The only explanation was a terse caption ("Faded bars: fewer than 5 samples") away from the chart, and no reason was given.
+- **What was wrong:** I assumed the user would already know what the fade means and why it matters. An ops user seeing faded bars needs the meaning and the consequence (too few kits for a reliable median) next to the visual. Visual encodings must be explained where they appear.
+- **How it was caught:** The developer asked why the bars were faded during QA of the median chart. Fixed by adding a "Faded = …" key in the chart legend, a reason in the tooltip and table hover, a "why" footnote for grey table values, and a note on the greyed turnaround tile.
