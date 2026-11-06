@@ -1,0 +1,2 @@
+event_id,order_id,event_type,occurred_at,source
+evt_1,ord_1,kit_shipped,2026-05-02T00:00:00Z,system

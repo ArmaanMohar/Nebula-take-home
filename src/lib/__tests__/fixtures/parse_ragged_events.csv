@@ -1,0 +1,4 @@
+event_id,order_id,kit_id,event_type,occurred_at,source
+evt_1,ord_1,kit_1,kit_shipped,2026-05-02T00:00:00Z,system
+evt_2,ord_1,kit_1
+evt_3,ord_1,kit_1,kit_delivered,2026-05-04T00:00:00Z,carrier,extra

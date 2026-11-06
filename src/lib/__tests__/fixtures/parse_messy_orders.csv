@@ -1,0 +1,5 @@
+﻿ Status ,ORDER_ID,Created At,customer_id,Product,country,is_test,Notes
+ paid ,ord_1,2026-05-01T10:00:00Z,cus_1,WGS_30x,us,false,"rush, VIP"
+
+   
+paid,ord_2,2026-05-02 08:30:00,cus_2,wgs_100x,CA,,
