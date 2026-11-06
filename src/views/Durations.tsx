@@ -3,6 +3,7 @@ import { KIT_PRODUCTS, SMALL_N, type Product } from '../lib/config';
 import { stageDurations, type DurationCell, type KitProduct } from '../lib/metrics';
 import type { OrderModel } from '../lib/types';
 import { fmtDays, fmtInt, fmtPct } from '../components/format';
+import { MedianDurationsChart } from '../components/MedianDurationsChart';
 
 interface Props {
   models: OrderModel[];
@@ -82,6 +83,11 @@ export function Durations({ models, productFilter }: Props) {
         <li>Stages with a missing or out-of-order scan are left out. Grey values: fewer than {SMALL_N} samples.</li>
         <li>A replacement kit&apos;s Order → Shipped is measured from the kit_replaced event.</li>
       </ul>
+      <section className="rounded-md border border-slate-200 bg-white px-4 py-3">
+        <h2 className="text-sm font-semibold text-slate-800">Median days per stage by product</h2>
+        <p className="mb-2 text-xs text-slate-500">Completed stages only. Faded bars: fewer than {SMALL_N} samples. Hover for p90 and n.</p>
+        <MedianDurationsChart rows={rows} products={products} />
+      </section>
     </div>
   );
 }

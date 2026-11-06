@@ -118,4 +118,4 @@ The pipeline is built once per upload and memoized in `state/dataset`. Filters o
 
 ## Backlog (deferred, in priority order)
 
-- Durations view: grouped bar chart of medians per stage × product (table ships first; chart was first on the cut list).
+- ~~Durations view: grouped bar chart of medians per stage × product~~ (done).
