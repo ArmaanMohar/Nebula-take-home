@@ -112,9 +112,6 @@ The pipeline is built once per upload and memoized in `state/dataset`. Filters o
 11. asOf comes from the data (fake system time is set to 2030 and the result must not change).
 12. Percentiles: median and p90 linear interpolation on known arrays.
 
-## Open question (needs your call, see rule 8)
+## Resolved
 
-**How durations handle kits still in a stage.** Completed-only medians understate slow stages. Delivered→mailed is the worst case: about 677 kits are still open there.
-- a) Use completed instances only, and show "open now / open over target" columns next to them **(recommended)**: simple and honest, and stuck covers the open ones.
-- b) Count open-over-target kits in the `% over` denominator and numerator.
-- c) Survival or censoring estimate. Too much for the timebox.
+- Open stage instances: completed-only stats + "open now / open over target" columns (decision table, 2026-11-06).

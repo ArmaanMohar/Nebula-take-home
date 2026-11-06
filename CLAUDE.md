@@ -74,6 +74,7 @@ AI_NOTES.md         running log of AI mistakes (see Workflow)
 | Volume / current stage / finished | Volume = orders. Current stage = stage of each order's active (latest) kit. Finished = orders whose final kit is `report_ready` |
 | Order-level turnaround | order `created_at` → `report_ready` on the final kit |
 | Median / p90 | Linear interpolation (numpy default) |
+| Durations for kits still in a stage | Median/p90/% over use completed stage instances only; Durations view also shows "open now" and "open over target" counts per stage |
 | Date filter | UTC calendar days on order `created_at` |
 | Turnaround colors | green = within target; yellow = completed over target; red = open over target (stuck); always with a day count |
 
