@@ -1,0 +1,15 @@
+event_id,order_id,kit_id,event_type,occurred_at,source
+e1,ord_ok,kit_a,kit_shipped,2026-05-02T10:00:00Z,system
+e2,ord_ok,kit_a,kit_shipped,2026-05-02T05:00:00-05:00,system
+e3,ord_ok,kit_a,kit_shipped,2026-05-02T10:00:00Z,system
+e4,ord_ok,kit_a, Kit_Delivered ,2026-05-04 10:00:00,Carrier
+e5,ord_ok,kit_a,kit_teleported,2026-05-05T00:00:00Z,system
+e6,ord_ok,,kit_shipped,2026-05-02T10:00:00Z,system
+e7,,kit_a,kit_shipped,2026-05-02T10:00:00Z,system
+e8,ord_ok,kit_a,sample_mailed,soon,system
+e9,ord_ghost,kit_g,kit_shipped,2026-05-02T10:00:00Z,system
+e10,ord_badprod,kit_b,kit_shipped,2026-05-02T10:00:00Z,system
+e11,ord_naive,kit_a,sample_mailed,2026-05-06T00:00:00Z,lab
+e12,ord_up,kit_u,kit_shipped,2026-05-02T10:00:00Z,system
+e13,ord_naive,kit_n,kit_shipped,2026-04-30T00:00:00Z,drone
+e14,ord_test,kit_t,report_ready,2026-05-10T00:00:00Z,lab

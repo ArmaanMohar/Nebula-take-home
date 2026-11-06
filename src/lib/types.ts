@@ -31,6 +31,7 @@ export const EXCLUSION_REASONS = [
   'unknown_status',
   'unknown_is_test',
   'orphan_order_id',
+  'order_excluded',
   'duplicate_event',
   'duplicate_order',
   'kit_order_conflict',
@@ -82,6 +83,7 @@ export interface ReasonBucket {
 
 export interface DataQualityReport {
   inputRows: Record<CsvKind, number>;
+  parseWarnings: Record<CsvKind, ParseWarning[]>;
   excluded: Record<ExclusionReason, ReasonBucket>;
   flagged: Record<FlagReason, ReasonBucket>;
 }

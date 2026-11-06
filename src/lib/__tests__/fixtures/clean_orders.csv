@@ -1,0 +1,12 @@
+order_id,created_at,customer_id,product,country,status,is_test
+ord_ok,2026-05-01T10:00:00Z,cus_1, WGS_30X , us , PAID ,FALSE
+ord_naive,2026-05-01 10:00:00,cus_2,wgs_100x,CA,paid,
+ord_test,2026-05-01T10:00:00Z,cus_3,wgs_30x,US,paid,Yes
+ord_up,2026-05-01T10:00:00Z,cus_4,upload_only,US,paid,0
+ord_ok,2026-05-02T10:00:00Z,cus_9,wgs_30x,US,paid,false
+,2026-05-01T10:00:00Z,cus_5,wgs_30x,US,paid,false
+ord_badts,yesterday,cus_6,wgs_30x,US,paid,false
+ord_badprod,2026-05-01T10:00:00Z,cus_7,wgs_999x,US,paid,false
+ord_badstatus,2026-05-01T10:00:00Z,cus_8,wgs_30x,US,pending,false
+ord_badtest,2026-05-01T10:00:00Z,cus_10,wgs_30x,US,paid,maybe
+ord_late,2026-06-01T00:00:00Z,cus_11,wgs_30x,US,paid,false
