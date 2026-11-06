@@ -78,6 +78,8 @@ AI_NOTES.md         running log of AI mistakes (see Workflow)
 | Paid kit order with no events | State "awaiting shipment"; stuck if > target for order→shipped (3) |
 | Kit at `kit_delivered`, customer hasn't mailed | Counts as stuck after the delivered→mailed target, owner = customer; Stuck view has an owner filter (~278) |
 | Volume / current stage / finished | Volume = orders. Current stage = stage of each order's active (latest) kit. Finished = orders whose final kit is `report_ready` |
+| Refunded / cancelled orders in "where kits are now" | Not-finished ones get their own bucket "Refunded / cancelled" (284); ones that reached `report_ready` count as finished (75) |
+| Data Quality view vs global filters | Dataset-level, not filtered (excluded rows may have no valid order); view shows a "not filtered" note |
 | Order-level turnaround | order `created_at` → `report_ready` on the final kit |
 | Median / p90 | Linear interpolation (numpy default) |
 | Durations for kits still in a stage | Median/p90/% over use completed stage instances only; Durations view also shows "open now" and "open over target" counts per stage |
