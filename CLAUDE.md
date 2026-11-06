@@ -61,6 +61,8 @@ AI_NOTES.md         running log of AI mistakes (see Workflow)
 | Missing intermediate scan (e.g. no `sample_mailed` but `sample_received` exists) | Flag `missing_scan`; a stage duration is measured only when both its start and end events exist; kit still advances (55 no mailed, 28 no delivered) |
 | Event with order_id not in orders.csv | Excluded, counted (40) |
 | Blank kit_id / blank order_id / unparseable timestamp / unknown event_type | Excluded, counted (0) |
+| Date-only timestamp (`2026-05-01`, no time) | Unparseable → excluded `unparseable_timestamp` (0) |
+| Ragged CSV row (too few / too many fields) | Kept; short rows get blank fields (then normal field checks apply), extras ignored; parse warning with row number shown in Data Quality (0) |
 | Duplicate `order_id` in orders.csv | Keep first, exclude the rest `duplicate_order` (0) |
 | Same kit_id on more than one order | Exclude events not matching the kit's first-seen order `kit_order_conflict` (0) |
 | Event timestamp after asOf or before order created_at | Flagged (0) |
