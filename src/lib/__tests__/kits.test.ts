@@ -11,6 +11,8 @@ import messyO from './fixtures/kits-messy/orders.csv?raw';
 import messyE from './fixtures/kits-messy/kit_events.csv?raw';
 import stuckO from './fixtures/kits-stuck/orders.csv?raw';
 import stuckE from './fixtures/kits-stuck/kit_events.csv?raw';
+import afterO from './fixtures/kits-after-asof/orders.csv?raw';
+import afterE from './fixtures/kits-after-asof/kit_events.csv?raw';
 import unlinkedO from './fixtures/kits-unlinked/orders.csv?raw';
 import unlinkedE from './fixtures/kits-unlinked/kit_events.csv?raw';
 
@@ -132,6 +134,18 @@ describe('kits: unlinked kit', () => {
     expect(stage('ord_u', 'ship', 'kit_u2')).toMatchObject({ start: Date.UTC(2026, 0, 1), days: 9 });
     // Control: a proper replacement chain is not flagged.
     expect(get('ord_c').kits.flatMap((k) => k.flags)).toEqual([]);
+  });
+});
+
+describe('kits: stage starting after asOf', () => {
+  it('is not started: no days, not open, not stuck; control order unaffected', () => {
+    const { get, models } = load(afterO, afterE);
+    const f = get('ord_future');
+    expect(f.order.flags).toContain('after_asof');
+    expect(f.openStage).toEqual({ stageId: 'ship', kitId: null, start: Date.UTC(2026, 11, 1), status: 'excluded', excludedBy: 'starts_after_asof' });
+    expect(f.stuck).toBe(false);
+    expect(models.flatMap((m) => m.stages).filter((s) => s.days !== undefined && s.days < 0)).toEqual([]);
+    expect(get('ord_now').stages[0]).toMatchObject({ stageId: 'ship', days: 1, status: 'done_ok' });
   });
 });
 

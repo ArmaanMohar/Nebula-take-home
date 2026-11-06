@@ -25,6 +25,7 @@ const EXCLUDED_LABELS: Record<NonNullable<StageInstance['excludedBy']>, string> 
   out_of_order: 'out of order',
   negative_duration: 'negative duration',
   kit_closed: 'kit replaced first',
+  starts_after_asof: 'not started (after data date)',
 };
 
 /** Color + text label for a stage; color never carries meaning alone. */
@@ -88,7 +89,7 @@ function KitCard({ kit, stages, orderClosed, isActive }: { kit: Kit; stages: Sta
             <th className="px-4 py-1 text-left font-medium">Occurred (UTC)</th>
             <th className="px-2 py-1 text-left font-medium">Event</th>
             <th className="px-2 py-1 text-left font-medium">Source</th>
-            <th className="px-2 py-1 text-left font-medium">CSV row</th>
+            <th className="px-2 py-1 text-left font-medium" title="Data row number: counts data rows only, excluding the header and blank lines">Data row</th>
             <th className="px-2 py-1 text-left font-medium">Flags</th>
           </tr>
         </thead>
@@ -172,7 +173,7 @@ export function OrderDetail({ allModels, filtered, orderId, onOpenOrder }: Props
           <div><dt className="text-slate-500">Last event</dt><dd className="tabular-nums">{fmtDateTime(m.lastEventAt)}</dd></div>
           <div>
             <dt className="text-slate-500">Waiting on</dt>
-            <dd>{open && !orderClosed ? `${STAGE_BY_ID[open.stageId].label} · ${STAGE_BY_ID[open.stageId].owner} · ${fmtDays(open.days)}` : '–'}</dd>
+            <dd>{open && !orderClosed ? `${STAGE_BY_ID[open.stageId].label} · ${STAGE_BY_ID[open.stageId].owner} · ${open.excludedBy === 'starts_after_asof' ? 'not started (after data date)' : fmtDays(open.days)}` : '–'}</dd>
           </div>
           <div><dt className="text-slate-500">Turnaround</dt><dd>{m.turnaroundDays !== undefined ? `${fmtDays(m.turnaroundDays)} (order → report)` : '–'}</dd></div>
         </dl>

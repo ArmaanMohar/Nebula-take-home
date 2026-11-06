@@ -136,7 +136,7 @@ export interface Kit {
 }
 
 export type StageStatus = 'done_ok' | 'done_over' | 'open_ok' | 'open_over' | 'excluded';
-export type StageExclusion = 'missing_scan' | 'out_of_order' | 'negative_duration' | 'kit_closed';
+export type StageExclusion = 'missing_scan' | 'out_of_order' | 'negative_duration' | 'kit_closed' | 'starts_after_asof';
 
 export interface StageInstance {
   stageId: StageId;

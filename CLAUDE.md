@@ -69,6 +69,8 @@ AI_NOTES.md         running log of AI mistakes (see Workflow)
 | Blank `customer_id` | Keep order, flag `missing_customer_id` (0) |
 | Blank `country` | Keep, no flag; displayed as "Unknown" (0) |
 | Event timestamp after asOf or before order created_at | Flagged (0) |
+| Stage that would start after asOf (e.g. order `created_at` after asOf) | Not started: stage excluded `starts_after_asof`, no days shown, not in "open now", never stuck; order keeps its `after_asof` flag (0) |
+| Upload where no valid orders remain (header-only or all rows excluded) | Rejected with an error banner; previous dataset stays loaded (0) |
 | `kit_replaced` | Closes the old kit (state: replaced, never stuck). Replacement kit = next kit_id on the same order whose first event is after the replaced event. Replacement kit's `kit_shipped` is measured from the `kit_replaced` time against the order→shipped target (205) |
 | `kit_replaced` with no successor kit yet | Order state "awaiting replacement shipment", owner fulfillment; stuck if > order→shipped target since `kit_replaced` (4) |
 | Later kit on an order with no `kit_replaced` link from the kit before it (none, or replaced before/after mismatch) | Keep both; newest kit is active; its ship stage measured from order `created_at`; flag first event of both kits `unlinked_kit` (0) |

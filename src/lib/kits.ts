@@ -89,6 +89,8 @@ function buildKit(kitId: string, orderId: string, evs: KitEvent[], q: QualityRec
 }
 
 function openInstance(stage: StageDef, kitId: string | null, start: number, asOf: number): StageInstance {
+  // Starts after the data date (e.g. order created after asOf): not started yet, no days, not open.
+  if (start > asOf) return { stageId: stage.id, kitId, start, status: 'excluded', excludedBy: 'starts_after_asof' };
   const d = days(start, asOf);
   return { stageId: stage.id, kitId, start, days: d, status: d > stage.targetDays ? 'open_over' : 'open_ok' };
 }
