@@ -25,6 +25,7 @@ const KIND_NAMES: Record<CsvKind, string> = { orders: 'orders', events: 'kit eve
 
 /** Picks the closest kind for a file that matches neither, so the error names the right missing columns. */
 function explainUnknown(file: InputFile): string {
+  if (file.text.replace('\uFEFF', '').trim() === '') return `${file.name} is empty.`;
   const attempts = (Object.keys(REQUIRED_COLUMNS) as CsvKind[]).map((k) => parseCsv(file.text, k));
   const best = attempts
     .filter((a) => !a.ok)

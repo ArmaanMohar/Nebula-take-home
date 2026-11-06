@@ -38,6 +38,11 @@ describe('buildDataset (upload)', () => {
     if (!res.ok) expect(res.errors[0]).toMatch(/No valid orders/);
   });
 
+  it('names the actual empty file, not a guessed kind', () => {
+    const res = buildDataset([{ name: 'orders.csv', text: '' }, { name: 'kit_events.csv', text: '\uFEFF \r\n' }], 'upload');
+    expect(res).toEqual({ ok: false, errors: ['orders.csv is empty.', 'kit_events.csv is empty.'] });
+  });
+
   it('handles garbage input without throwing', () => {
     const res = buildDataset([{ name: 'x', text: '\u0000\u0001' }, { name: 'y', text: '' }], 'upload');
     expect(res.ok).toBe(false);
