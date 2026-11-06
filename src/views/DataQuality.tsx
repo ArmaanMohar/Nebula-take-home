@@ -35,7 +35,7 @@ export function DataQuality({ dataset, onOpenOrder }: Props) {
   return (
     <div className="space-y-4">
       <p className="rounded border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-600">
-        Covers the whole loaded dataset. Global filters do not apply here, because excluded rows may have no valid order to filter on.
+        Covers the whole loaded dataset. Global filters do not apply here, because excluded rows may have no valid order to filter on. "Data row" counts data rows only (header and blank lines skipped), so it can differ from the line number in a text editor.
       </p>
 
       <div className="overflow-x-auto rounded-md border border-slate-200 bg-white">
@@ -93,7 +93,7 @@ export function DataQuality({ dataset, onOpenOrder }: Props) {
                       const linkable = orderId !== '' && findOrder(dataset.models, orderId) !== undefined;
                       return (
                         <div key={i} className="text-xs">
-                          <span className="font-mono text-slate-500">{FILE_LABEL[ex.kind]} row {ex.row.row}</span>
+                          <span className="font-mono text-slate-500">{FILE_LABEL[ex.kind]} data row {ex.row.row}</span>
                           {ex.detail && <span className="ml-2 text-slate-700">{ex.detail}</span>}
                           {linkable && (
                             <button className="ml-2 text-slate-600 underline hover:text-slate-900" onClick={() => onOpenOrder(orderId)}>
@@ -118,7 +118,7 @@ export function DataQuality({ dataset, onOpenOrder }: Props) {
           <p className="mb-1 text-xs text-slate-500">Rows with too few or too many fields. Short rows were kept with blank fields; extra fields were ignored.</p>
           <ul className="text-xs text-slate-700">
             {warnings.slice(0, 50).map((w, i) => (
-              <li key={i}><span className="font-mono text-slate-500">{FILE_LABEL[w.kind]} row {w.row}</span>: {w.message}</li>
+              <li key={i}><span className="font-mono text-slate-500">{FILE_LABEL[w.kind]} data row {w.row}</span>: {w.message}</li>
             ))}
           </ul>
           {warnings.length > 50 && <p className="text-xs text-slate-500">…and {fmtInt(warnings.length - 50)} more.</p>}

@@ -31,7 +31,7 @@ export function Overview({ models, onOpenStuck }: Props) {
         <StatTile
           label="Finished"
           value={fmtInt(o.finished)}
-          sub={`Report ready · ${fmtPct(o.finishedShare)} of kit orders`}
+          sub={o.finishedShare === null ? 'Report ready' : `Report ready · ${fmtPct(o.finishedShare)} of kit orders`}
         />
         <StatTile
           label="Stuck"
@@ -44,7 +44,7 @@ export function Overview({ models, onOpenStuck }: Props) {
           label="Median turnaround"
           value={fmtDays(t.median)}
           muted={t.n < SMALL_N}
-          sub={`Order → report · p90 ${fmtDays(t.p90)} · n=${fmtInt(t.n)}${t.n < SMALL_N ? ` · greyed: under ${SMALL_N} finished orders, not reliable` : ''}`}
+          sub={t.n === 0 ? 'Order → report · no finished orders yet' : `Order → report · p90 ${fmtDays(t.p90)} · n=${fmtInt(t.n)}${t.n < SMALL_N ? ` · greyed: under ${SMALL_N} finished orders, not reliable` : ''}`}
         />
         <StatTile
           label="Refunded / cancelled"
@@ -57,7 +57,11 @@ export function Overview({ models, onOpenStuck }: Props) {
         <p className="mb-2 text-xs text-slate-500">
           Latest step on each order&apos;s active kit. Refunded / cancelled orders that never finished are shown separately in grey.
         </p>
-        <CurrentStageChart rows={o.current} />
+        {o.kitOrders === 0 ? (
+          <p className="py-4 text-sm text-slate-500">No kit orders match the current filters.</p>
+        ) : (
+          <CurrentStageChart rows={o.current} />
+        )}
       </section>
     </div>
   );
