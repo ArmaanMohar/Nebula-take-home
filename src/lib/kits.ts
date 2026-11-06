@@ -161,6 +161,14 @@ export function buildModels(orders: Order[], events: KitEvent[], asOf: number, q
         next.kit.replaces = prev.kitId;
       }
     }
+    // A later kit with no kit_replaced predecessor breaks the replacement rule: flag it and the kit before it.
+    for (let i = 1; i < builds.length; i++) {
+      const kit = builds[i]!.kit;
+      if (kit.replaces) continue;
+      const prev = builds[i - 1]!.kit;
+      q.flag('events', kit.events[0]!, 'unlinked_kit', `kit ${kit.kitId} follows ${prev.kitId} with no kit_replaced link`);
+      q.flag('events', prev.events[0]!, 'unlinked_kit', `kit ${prev.kitId} is followed by ${kit.kitId} with no kit_replaced link`);
+    }
     const kitById = new Map(builds.map((b) => [b.kit.kitId, b.kit]));
 
     const stages: StageInstance[] = [];

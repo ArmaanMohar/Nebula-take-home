@@ -1,0 +1,7 @@
+event_id,order_id,kit_id,event_type,occurred_at,source
+u1,ord_u,kit_u1,kit_shipped,2026-01-02T00:00:00Z,system
+u2,ord_u,kit_u1,kit_delivered,2026-01-04T00:00:00Z,carrier
+u3,ord_u,kit_u2,kit_shipped,2026-01-10T00:00:00Z,system
+c1,ord_c,kit_c1,kit_shipped,2026-01-02T00:00:00Z,system
+c2,ord_c,kit_c1,kit_replaced,2026-01-05T00:00:00Z,system
+c3,ord_c,kit_c2,kit_shipped,2026-01-06T00:00:00Z,system

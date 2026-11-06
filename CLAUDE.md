@@ -71,6 +71,7 @@ AI_NOTES.md         running log of AI mistakes (see Workflow)
 | Event timestamp after asOf or before order created_at | Flagged (0) |
 | `kit_replaced` | Closes the old kit (state: replaced, never stuck). Replacement kit = next kit_id on the same order whose first event is after the replaced event. Replacement kit's `kit_shipped` is measured from the `kit_replaced` time against the order→shipped target (205) |
 | `kit_replaced` with no successor kit yet | Order state "awaiting replacement shipment", owner fulfillment; stuck if > order→shipped target since `kit_replaced` (4) |
+| Later kit on an order with no `kit_replaced` link from the kit before it (none, or replaced before/after mismatch) | Keep both; newest kit is active; its ship stage measured from order `created_at`; flag first event of both kits `unlinked_kit` (0) |
 | Events on a kit after its `kit_replaced` | Keep, flag `event_after_replaced`; kit stays closed (0) |
 | QC result | Received → QC ends at the first `qc_passed` or `qc_failed`. QC passed → sequencing measured only from `qc_passed` |
 | `qc_failed` with no replacement | Open; owner = support; stuck if no replacement within QC target window (0) |

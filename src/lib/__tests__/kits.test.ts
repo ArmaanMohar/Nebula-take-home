@@ -11,6 +11,8 @@ import messyO from './fixtures/kits-messy/orders.csv?raw';
 import messyE from './fixtures/kits-messy/kit_events.csv?raw';
 import stuckO from './fixtures/kits-stuck/orders.csv?raw';
 import stuckE from './fixtures/kits-stuck/kit_events.csv?raw';
+import unlinkedO from './fixtures/kits-unlinked/orders.csv?raw';
+import unlinkedE from './fixtures/kits-unlinked/kit_events.csv?raw';
 
 function load(ordersCsv: string, eventsCsv: string) {
   const rows = (text: string, kind: CsvKind) => {
@@ -99,6 +101,22 @@ describe('kits: messy timelines', () => {
     expect(events.find((e) => e.eventId === 'a3')!.flags).toContain('event_after_replaced');
     expect(get('ord_a').kits[0]!.state).toBe('replaced');
     expect(get('ord_a').state).toBe('awaiting_replacement');
+  });
+});
+
+describe('kits: unlinked kit', () => {
+  it('flags both kits when a later kit has no kit_replaced link; newest kit is active', () => {
+    const { get, stage, events, report } = load(unlinkedO, unlinkedE);
+    const flags = (id: string) => events.find((e) => e.eventId === id)!.flags;
+    expect(flags('u1')).toContain('unlinked_kit');
+    expect(flags('u3')).toContain('unlinked_kit');
+    expect(report.flagged.unlinked_kit.count).toBe(2);
+    const m = get('ord_u');
+    expect(m.activeKit?.kitId).toBe('kit_u2');
+    expect(m.kits.every((k) => k.flags.includes('unlinked_kit'))).toBe(true);
+    expect(stage('ord_u', 'ship', 'kit_u2')).toMatchObject({ start: Date.UTC(2026, 0, 1), days: 9 });
+    // Control: a proper replacement chain is not flagged.
+    expect(get('ord_c').kits.flatMap((k) => k.flags)).toEqual([]);
   });
 });
 

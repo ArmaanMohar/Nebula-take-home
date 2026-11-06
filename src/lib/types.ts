@@ -50,6 +50,7 @@ export const FLAG_REASONS = [
   'unknown_source',
   'upload_only_has_events',
   'missing_customer_id',
+  'unlinked_kit',
 ] as const;
 export type FlagReason = (typeof FLAG_REASONS)[number];
 
@@ -77,6 +78,7 @@ export const REASON_LABELS: Record<ExclusionReason | FlagReason, string> = {
   unknown_source: 'Unknown event source',
   upload_only_has_events: 'Upload-only order has kit events',
   missing_customer_id: 'Order has no customer_id',
+  unlinked_kit: 'Extra kit on order without a kit_replaced link',
 };
 
 export interface Order {
