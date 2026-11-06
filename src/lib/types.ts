@@ -49,8 +49,35 @@ export const FLAG_REASONS = [
   'event_after_replaced',
   'unknown_source',
   'upload_only_has_events',
+  'missing_customer_id',
 ] as const;
 export type FlagReason = (typeof FLAG_REASONS)[number];
+
+/** Short human-readable labels for the Data Quality view. */
+export const REASON_LABELS: Record<ExclusionReason | FlagReason, string> = {
+  missing_required_field: 'Required field is blank',
+  unparseable_timestamp: 'Timestamp could not be parsed',
+  unknown_event_type: 'Unknown event type',
+  unknown_product: 'Unknown product',
+  unknown_status: 'Unknown order status',
+  unknown_is_test: 'Unrecognized is_test value',
+  orphan_order_id: 'Event for an order not in orders file',
+  order_excluded: 'Event for an order that was excluded',
+  duplicate_event: 'Duplicate event (same kit, type, instant)',
+  duplicate_order: 'Duplicate order_id (first kept)',
+  kit_order_conflict: 'Kit appears on more than one order',
+  upload_only_event: 'Event on an upload-only order',
+  naive_timestamp: 'Timestamp had no timezone (read as UTC)',
+  repeated_stage: 'Stage event repeated (first used)',
+  out_of_order: 'Events out of pipeline order',
+  missing_scan: 'Missing intermediate scan',
+  after_asof: 'Timestamp after data as-of',
+  before_order_created: 'Event before order was created',
+  event_after_replaced: 'Event on kit after it was replaced',
+  unknown_source: 'Unknown event source',
+  upload_only_has_events: 'Upload-only order has kit events',
+  missing_customer_id: 'Order has no customer_id',
+};
 
 export interface Order {
   orderId: string;

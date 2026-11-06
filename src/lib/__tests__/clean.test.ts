@@ -4,6 +4,8 @@ import { parseCsv } from '../parse';
 import type { RawRow } from '../types';
 import ordersCsv from './fixtures/clean_orders.csv?raw';
 import eventsCsv from './fixtures/clean_events.csv?raw';
+import noCusOrders from './fixtures/missing-customer-id/orders.csv?raw';
+import noCusEvents from './fixtures/missing-customer-id/kit_events.csv?raw';
 
 function rows(text: string, kind: 'orders' | 'events'): RawRow[] {
   const res = parseCsv(text, kind);
@@ -72,6 +74,18 @@ describe('clean: events', () => {
     expect(ord('ord_up').flags).toContain('upload_only_has_events');
     expect(ord('ord_late').flags).toContain('after_asof');
     expect(r.report.flagged.naive_timestamp.count).toBe(2);
+  });
+});
+
+describe('clean: missing customer_id', () => {
+  it('keeps the order and its events, flags it; blank country kept unflagged', () => {
+    const r = clean(rows(noCusOrders, 'orders'), rows(noCusEvents, 'events'));
+    const nocus = r.orders.find((o) => o.orderId === 'ord_nocus')!;
+    const ctrl = r.orders.find((o) => o.orderId === 'ord_ctrl')!;
+    expect(nocus).toMatchObject({ customerId: '', country: '', flags: ['missing_customer_id'] });
+    expect(ctrl.flags).toEqual([]);
+    expect(r.report.flagged.missing_customer_id.count).toBe(1);
+    expect(r.events.map((e) => e.orderId)).toEqual(['ord_nocus', 'ord_ctrl']);
   });
 });
 

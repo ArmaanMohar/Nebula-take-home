@@ -133,6 +133,7 @@ export function clean(
       flags: [],
     };
     if (ts.naive) q.flag('orders', order, 'naive_timestamp');
+    if (!order.customerId) q.flag('orders', order, 'missing_customer_id');
     // A valid later row wins over an earlier invalid one for event attribution.
     excludedOrderIds.delete(orderId);
     orders.push(order);

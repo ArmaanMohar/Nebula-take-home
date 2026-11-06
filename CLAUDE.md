@@ -64,7 +64,9 @@ AI_NOTES.md         running log of AI mistakes (see Workflow)
 | Date-only timestamp (`2026-05-01`, no time) | Unparseable → excluded `unparseable_timestamp` (0) |
 | Ragged CSV row (too few / too many fields) | Kept; short rows get blank fields (then normal field checks apply), extras ignored; parse warning with row number shown in Data Quality (0) |
 | Duplicate `order_id` in orders.csv | Keep first, exclude the rest `duplicate_order` (0) |
-| Same kit_id on more than one order | Exclude events not matching the kit's first-seen order `kit_order_conflict` (0) |
+| Same kit_id on more than one order | Exclude events not matching the kit's first-seen order `kit_order_conflict`. First-seen = order on the kit's earliest event by parsed instant (ties: file order), so row order doesn't matter (0) |
+| Blank `customer_id` | Keep order, flag `missing_customer_id` (0) |
+| Blank `country` | Keep, no flag; displayed as "Unknown" (0) |
 | Event timestamp after asOf or before order created_at | Flagged (0) |
 | `kit_replaced` | Closes the old kit (state: replaced, never stuck). Replacement kit = next kit_id on the same order whose first event is after the replaced event. Replacement kit's `kit_shipped` is measured from the `kit_replaced` time against the order→shipped target (205) |
 | `kit_replaced` with no successor kit yet | Order state "awaiting replacement shipment", owner fulfillment; stuck if > order→shipped target since `kit_replaced` (4) |
