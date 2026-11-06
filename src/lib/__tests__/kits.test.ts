@@ -82,7 +82,22 @@ describe('kits: messy timelines', () => {
     expect(stage('ord_m', 'qc')).toMatchObject({ days: 2, status: 'done_ok' });
     expect(get('ord_m').openStage?.stageId).toBe('sequence');
     expect(get('ord_m').kits[0]!.flags).toContain('missing_scan');
-    expect(report.flagged.missing_scan.count).toBe(1);
+    expect(report.flagged.missing_scan.examples.filter((e) => e.row.fields.order_id === 'ord_m')).toHaveLength(1);
+  });
+
+  it('missing scan: counts each missing step, even when two gaps precede the same event', () => {
+    const { events, report, stage } = load(messyO, messyE);
+    const n2 = events.find((e) => e.eventId === 'n2')!;
+    expect(n2.flags).toEqual(['missing_scan']);
+    const details = report.flagged.missing_scan.examples.filter((e) => e.row.fields.event_id === 'n2').map((e) => e.detail);
+    expect(details).toEqual([
+      'kit_delivered missing before sample_received on kit kit_m2',
+      'sample_mailed missing before sample_received on kit kit_m2',
+    ]);
+    // ord_m: 1 (no mailed) + ord_m2: 2 (no delivered, no mailed). Out-of-order ord_o adds none.
+    expect(report.flagged.missing_scan.count).toBe(3);
+    expect(events.filter((e) => e.orderId === 'ord_o').some((e) => e.flags.includes('missing_scan'))).toBe(false);
+    expect(stage('ord_m2', 'deliver')).toMatchObject({ status: 'excluded', excludedBy: 'missing_scan' });
   });
 
   it('repeated stage uses the first occurrence; out-of-order excludes affected stages', () => {

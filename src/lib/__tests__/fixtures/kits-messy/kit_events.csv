@@ -11,3 +11,5 @@ o5,ord_o,kit_o,sample_mailed,2026-01-12T00:00:00Z,carrier
 a1,ord_a,kit_a,kit_shipped,2026-01-02T00:00:00Z,system
 a2,ord_a,kit_a,kit_replaced,2026-01-03T00:00:00Z,system
 a3,ord_a,kit_a,kit_delivered,2026-01-05T00:00:00Z,carrier
+n1,ord_m2,kit_m2,kit_shipped,2026-01-02T00:00:00Z,system
+n2,ord_m2,kit_m2,sample_received,2026-01-20T00:00:00Z,lab

@@ -4,6 +4,7 @@ import {
   MS_PER_DAY,
   NEXT_STAGE_AFTER,
   OPTIONAL_START_STAGES,
+  PIPELINE_STEPS,
   STAGES,
   STAGE_BY_ID,
   type EventType,
@@ -53,6 +54,16 @@ function buildKit(kitId: string, orderId: string, evs: KitEvent[], q: QualityRec
   }
 
   const used = Object.values(firstEvent) as KitEvent[];
+
+  // Missing scans: one flag per absent step below the furthest step reached, on the first event after the gap.
+  const pipelineEvents = used.filter((e) => e.type !== 'kit_replaced').sort(byTime);
+  for (const step of PIPELINE_STEPS) {
+    const rank = EVENT_RANK[step[0]!];
+    if (rank >= maxRank || step.some((t) => firstEvent[t])) continue;
+    const after = pipelineEvents.find((e) => EVENT_RANK[e.type] > rank)!;
+    const missing = step.join(' / ');
+    q.flag('events', after, 'missing_scan', `${missing} missing before ${after.type} on kit ${kitId}`, missing);
+  }
   const lastEvent = used.reduce((best, ev) =>
     EVENT_RANK[ev.type] > EVENT_RANK[best.type] ||
     (EVENT_RANK[ev.type] === EVENT_RANK[best.type] && ev.at > best.at)
@@ -82,7 +93,7 @@ function openInstance(stage: StageDef, kitId: string | null, start: number, asOf
   return { stageId: stage.id, kitId, start, days: d, status: d > stage.targetDays ? 'open_over' : 'open_ok' };
 }
 
-function kitStages(b: KitBuild, shipStart: number, isActive: boolean, asOf: number, q: QualityRecorder): StageInstance[] {
+function kitStages(b: KitBuild, shipStart: number, isActive: boolean, asOf: number): StageInstance[] {
   const { kit, firstEvent, outOfOrder } = b;
   const waitingOn: StageId | null = kit.state === 'open' && isActive ? NEXT_STAGE_AFTER[kit.lastEvent.type] : null;
   const out: StageInstance[] = [];
@@ -99,7 +110,6 @@ function kitStages(b: KitBuild, shipStart: number, isActive: boolean, asOf: numb
 
     if (start === undefined) {
       if (OPTIONAL_START_STAGES.includes(stage.id)) continue;
-      q.flag('events', endEvent!, 'missing_scan', `${endEvent!.type} without ${stage.start} on kit ${kit.kitId}`);
       out.push({ ...base, end: endEvent!.at, status: 'excluded', excludedBy: 'missing_scan' });
       continue;
     }
@@ -175,7 +185,7 @@ export function buildModels(orders: Order[], events: KitEvent[], asOf: number, q
     builds.forEach((b, i) => {
       const pred = b.kit.replaces ? kitById.get(b.kit.replaces) : undefined;
       const shipStart = pred?.firstAt.kit_replaced ?? order.createdAt;
-      stages.push(...kitStages(b, shipStart, i === builds.length - 1, asOf, q));
+      stages.push(...kitStages(b, shipStart, i === builds.length - 1, asOf));
     });
 
     const kits = builds.map((b) => b.kit);

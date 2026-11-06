@@ -36,8 +36,11 @@ export interface Flaggable {
 export interface QualityRecorder {
   report: DataQualityReport;
   exclude(kind: CsvKind, row: RawRow, reason: ExclusionReason, detail?: string): void;
-  /** Idempotent per (item, reason): flagging the same item twice counts once. */
-  flag(kind: CsvKind, item: Flaggable, reason: FlagReason, detail?: string): void;
+  /**
+   * Idempotent per (item, reason, key): flagging the same item twice counts once.
+   * Pass a distinct `key` to count several distinct problems of one reason on the same row.
+   */
+  flag(kind: CsvKind, item: Flaggable, reason: FlagReason, detail?: string, key?: string): void;
 }
 
 function emptyBuckets<R extends string>(reasons: readonly R[]): Record<R, ReasonBucket> {
@@ -56,6 +59,7 @@ export function createRecorder(
     excluded: emptyBuckets(EXCLUSION_REASONS),
     flagged: emptyBuckets(FLAG_REASONS),
   };
+  const flagKeys = new WeakMap<Flaggable, Set<string>>();
   const record = (bucket: ReasonBucket, kind: CsvKind, row: RawRow, detail?: string) => {
     bucket.count++;
     if (bucket.examples.length < EXAMPLES_PER_REASON) bucket.examples.push({ kind, row, detail });
@@ -63,9 +67,13 @@ export function createRecorder(
   return {
     report,
     exclude: (kind, row, reason, detail) => record(report.excluded[reason], kind, row, detail),
-    flag: (kind, item, reason, detail) => {
-      if (item.flags.includes(reason)) return;
-      item.flags.push(reason);
+    flag: (kind, item, reason, detail, key = '') => {
+      const id = `${reason}|${key}`;
+      const seen = flagKeys.get(item) ?? new Set<string>();
+      if (seen.has(id)) return;
+      seen.add(id);
+      flagKeys.set(item, seen);
+      if (!item.flags.includes(reason)) item.flags.push(reason);
       record(report.flagged[reason], kind, item.raw, detail);
     },
   };

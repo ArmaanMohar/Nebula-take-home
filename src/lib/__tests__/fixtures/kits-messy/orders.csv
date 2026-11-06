@@ -2,3 +2,4 @@ order_id,created_at,customer_id,product,country,status,is_test
 ord_m,2026-01-01T00:00:00Z,cus_1,wgs_30x,US,paid,false
 ord_o,2026-01-01T00:00:00Z,cus_2,wgs_30x,US,paid,false
 ord_a,2026-01-01T00:00:00Z,cus_3,wgs_30x,US,paid,false
+ord_m2,2026-01-01T00:00:00Z,cus_4,wgs_30x,US,paid,false

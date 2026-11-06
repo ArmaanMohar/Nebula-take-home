@@ -31,6 +31,17 @@ export const EVENT_TYPES = [
 ] as const;
 export type EventType = (typeof EVENT_TYPES)[number];
 
+/** The linear pipeline, one step per rank. A kit that reached a step must have every earlier step (else missing_scan). */
+export const PIPELINE_STEPS: readonly (readonly EventType[])[] = [
+  ['kit_shipped'],
+  ['kit_delivered'],
+  ['sample_mailed'],
+  ['sample_received'],
+  ['qc_passed', 'qc_failed'],
+  ['sequencing_complete'],
+  ['report_ready'],
+];
+
 /** Pipeline position, used for out-of-order checks. QC outcomes share a rank. */
 export const EVENT_RANK: Record<EventType, number> = {
   kit_shipped: 1,

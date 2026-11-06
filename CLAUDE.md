@@ -54,11 +54,11 @@ AI_NOTES.md         running log of AI mistakes (see Workflow)
 | `is_test` | `true/1/yes/y/t` = test, `false/0/no/n/f/blank` = not test (case-insensitive). Anything else → flag, exclude from pipeline math. Test orders excluded by default; global toggle to include (67) |
 | `status` refunded / cancelled | Counted in order volume and visible in order detail; excluded from stuck list and SLA/duration stats, even if they progressed (151 refunded / 33 cancelled with events) |
 | `product = upload_only` | Counted in order volume; never enters the kit pipeline; not stuck. If it has events → flag `upload_only_has_events`, exclude those events from pipeline math (0) |
-| Timestamp with no timezone | Parse as UTC; flag `naive_timestamp` (248) |
+| Timestamp with no timezone | Parse as UTC; flag `naive_timestamp` (248 raw / 240 kept — 8 are duplicates/orphans, excluded before flagging) |
 | Duplicate events | Key = (kit_id, event_type, **parsed UTC instant**); event_id ignored. Deduped, counted (343 exact + 126 same instant in different tz notation) |
 | Same stage event repeated at different times | Use FIRST occurrence for stage timing; flag the repeat (0) |
 | Events out of pipeline order (e.g. received before mailed) | Order by parsed instant. Keep event, flag kit; exclude the affected stage duration from stats (0) |
-| Missing intermediate scan (e.g. no `sample_mailed` but `sample_received` exists) | Flag `missing_scan`; a stage duration is measured only when both its start and end events exist; kit still advances (55 no mailed, 28 no delivered) |
+| Missing intermediate scan (e.g. no `sample_mailed` but `sample_received` exists) | Flag `missing_scan` once per missing step (counted per missing scan, not per event), on the first event after the gap; detail names the missing event type. A stage duration is measured only when both its start and end events exist; kit still advances (83 = 55 no mailed + 28 no delivered) |
 | Event with order_id not in orders.csv | Excluded, counted (40) |
 | Event whose order row is in orders.csv but was itself excluded (e.g. unknown product) | Excluded `order_excluded` (separate from orphan); example shows the order's exclusion reason (0) |
 | Blank kit_id / blank order_id / unparseable timestamp / unknown event_type | Excluded, counted (0) |
