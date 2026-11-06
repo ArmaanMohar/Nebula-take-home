@@ -136,7 +136,8 @@ export interface Overview {
   /** finished / kitOrders, 0–1. Null when there are no kit orders. */
   finishedShare: number | null;
   stuck: number;
-  current: { bucket: CurrentBucket; label: string; count: number }[];
+  /** Share = count / all kit orders in a bucket, 0–1. */
+  current: { bucket: CurrentBucket; label: string; count: number; share: number }[];
   /** created_at → report_ready, paid kit orders. */
   turnaround: Stat;
 }
@@ -149,11 +150,15 @@ export function overview(models: OrderModel[]): Overview {
   let inProgress = 0;
   const kitOrders = models.filter((m) => KIT_PRODUCTS.includes(m.order.product)).length;
   const finished = models.filter((m) => m.state === 'complete').length;
+  let bucketed = 0;
   for (const m of models) {
     byProduct[m.order.product]++;
     byStatus[m.order.status]++;
     const b = currentBucket(m);
-    if (b) current.set(b, (current.get(b) ?? 0) + 1);
+    if (b) {
+      current.set(b, (current.get(b) ?? 0) + 1);
+      bucketed++;
+    }
     if (m.inPipelineStats && inProgressStates.includes(m.state)) inProgress++;
   }
   return {
@@ -165,7 +170,10 @@ export function overview(models: OrderModel[]): Overview {
     finished,
     finishedShare: kitOrders ? finished / kitOrders : null,
     stuck: models.filter((m) => m.stuck).length,
-    current: CURRENT_BUCKETS.map((bucket) => ({ bucket, label: BUCKET_LABELS[bucket], count: current.get(bucket) ?? 0 })),
+    current: CURRENT_BUCKETS.map((bucket) => {
+      const count = current.get(bucket) ?? 0;
+      return { bucket, label: BUCKET_LABELS[bucket], count, share: bucketed ? count / bucketed : 0 };
+    }),
     turnaround: stat(
       models.filter((m) => m.inPipelineStats && m.turnaroundDays !== undefined).map((m) => m.turnaroundDays!),
     ),

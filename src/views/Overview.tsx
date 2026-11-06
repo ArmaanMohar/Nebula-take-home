@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { SMALL_N } from '../lib/config';
 import { overview } from '../lib/metrics';
 import type { OrderModel } from '../lib/types';
+import { CurrentStageChart } from '../components/CurrentStageChart';
 import { StatTile } from '../components/StatTile';
 import { fmtDays, fmtInt, fmtPct } from '../components/format';
 
@@ -51,7 +52,13 @@ export function Overview({ models, onOpenStuck }: Props) {
           sub={`${fmtInt(o.byStatus.refunded)} refunded · ${fmtInt(o.byStatus.cancelled)} cancelled`}
         />
       </div>
-      <p className="text-xs text-slate-400">Current-stage chart comes next.</p>
+      <section className="rounded-md border border-slate-200 bg-white px-4 py-3">
+        <h2 className="text-sm font-semibold text-slate-800">Where kit orders are now</h2>
+        <p className="mb-2 text-xs text-slate-500">
+          Latest step on each order&apos;s active kit. Refunded / cancelled orders that never finished are shown separately in grey.
+        </p>
+        <CurrentStageChart rows={o.current} />
+      </section>
     </div>
   );
 }
