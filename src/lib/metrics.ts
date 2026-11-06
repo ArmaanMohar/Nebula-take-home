@@ -133,6 +133,8 @@ export interface Overview {
   inProgress: number;
   /** Orders whose final kit reached report_ready. */
   finished: number;
+  /** finished / kitOrders, 0–1. Null when there are no kit orders. */
+  finishedShare: number | null;
   stuck: number;
   current: { bucket: CurrentBucket; label: string; count: number }[];
   /** created_at → report_ready, paid kit orders. */
@@ -145,6 +147,8 @@ export function overview(models: OrderModel[]): Overview {
   const current = new Map<CurrentBucket, number>();
   const inProgressStates: OrderState[] = ['awaiting_shipment', 'awaiting_replacement', 'in_progress'];
   let inProgress = 0;
+  const kitOrders = models.filter((m) => KIT_PRODUCTS.includes(m.order.product)).length;
+  const finished = models.filter((m) => m.state === 'complete').length;
   for (const m of models) {
     byProduct[m.order.product]++;
     byStatus[m.order.status]++;
@@ -156,9 +160,10 @@ export function overview(models: OrderModel[]): Overview {
     orders: models.length,
     byProduct,
     byStatus,
-    kitOrders: models.filter((m) => KIT_PRODUCTS.includes(m.order.product)).length,
+    kitOrders,
     inProgress,
-    finished: models.filter((m) => m.state === 'complete').length,
+    finished,
+    finishedShare: kitOrders ? finished / kitOrders : null,
     stuck: models.filter((m) => m.stuck).length,
     current: CURRENT_BUCKETS.map((bucket) => ({ bucket, label: BUCKET_LABELS[bucket], count: current.get(bucket) ?? 0 })),
     turnaround: stat(
@@ -293,6 +298,11 @@ export function qualitySummary(report: DataQualityReport): QualityLine[] {
       .filter((l) => l.bucket.count > 0)
       .sort((a, b) => b.bucket.count - a.bucket.count);
   return [...lines('excluded', EXCLUSION_REASONS, report.excluded), ...lines('flagged', FLAG_REASONS, report.flagged)];
+}
+
+export function qualityTotals(report: DataQualityReport) {
+  const sum = (b: Record<string, ReasonBucket>) => Object.values(b).reduce((n, x) => n + x.count, 0);
+  return { excluded: sum(report.excluded), flagged: sum(report.flagged) };
 }
 
 // ---------- CSV export ----------
