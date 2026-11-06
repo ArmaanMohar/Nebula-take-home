@@ -8,6 +8,8 @@ export interface Dataset {
   models: OrderModel[];
   report: DataQualityReport;
   asOf: number;
+  /** Rows kept after cleaning, per file. */
+  kept: { orders: number; events: number };
   /** Where the data came from, for the header. */
   label: string;
 }
@@ -58,7 +60,7 @@ export function buildDataset(files: InputFile[], label: string): LoadResult {
     if (c.asOf === null || c.orders.length === 0) {
       return { ok: false, errors: ['No valid orders found after cleaning. Check that the files have data rows with valid order_id and created_at.'] };
     }
-    return { ok: true, dataset: { models: buildModels(c.orders, c.events, c.asOf, c.recorder), report: c.report, asOf: c.asOf, label } };
+    return { ok: true, dataset: { models: buildModels(c.orders, c.events, c.asOf, c.recorder), report: c.report, asOf: c.asOf, kept: { orders: c.orders.length, events: c.events.length }, label } };
   } catch (e) {
     return { ok: false, errors: [`Unexpected error while loading data: ${String(e)}`] };
   }

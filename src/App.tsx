@@ -5,6 +5,7 @@ import { fmtDateTime, fmtInt } from './components/format';
 import { applyFilters, filterOptions, overview, qualityTotals } from './lib/metrics';
 import { useDataset } from './state/dataset';
 import { useUrlState, type View } from './state/filters';
+import { DataQuality } from './views/DataQuality';
 import { Durations } from './views/Durations';
 import { OrderDetail } from './views/OrderDetail';
 import { Overview } from './views/Overview';
@@ -122,7 +123,7 @@ export default function App() {
           ) : view === 'order' ? (
             <OrderDetail allModels={dataset.models} filtered={filtered} orderId={orderId} onOpenOrder={(id) => navigate('order', id)} />
           ) : (
-            <p className="text-sm text-slate-500">This view is not built yet.</p>
+            <DataQuality dataset={dataset} onOpenOrder={(id) => navigate('order', id)} />
           )}
         </ErrorBoundary>
       </main>
