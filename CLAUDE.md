@@ -60,6 +60,7 @@ AI_NOTES.md         running log of AI mistakes (see Workflow)
 | Events out of pipeline order (e.g. received before mailed) | Order by parsed instant. Keep event, flag kit; exclude the affected stage duration from stats (0) |
 | Missing intermediate scan (e.g. no `sample_mailed` but `sample_received` exists) | Flag `missing_scan`; a stage duration is measured only when both its start and end events exist; kit still advances (55 no mailed, 28 no delivered) |
 | Event with order_id not in orders.csv | Excluded, counted (40) |
+| Event whose order row is in orders.csv but was itself excluded (e.g. unknown product) | Excluded `order_excluded` (separate from orphan); example shows the order's exclusion reason (0) |
 | Blank kit_id / blank order_id / unparseable timestamp / unknown event_type | Excluded, counted (0) |
 | Date-only timestamp (`2026-05-01`, no time) | Unparseable → excluded `unparseable_timestamp` (0) |
 | Ragged CSV row (too few / too many fields) | Kept; short rows get blank fields (then normal field checks apply), extras ignored; parse warning with row number shown in Data Quality (0) |
