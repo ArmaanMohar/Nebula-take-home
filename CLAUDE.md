@@ -82,6 +82,7 @@ AI_NOTES.md         running log of AI mistakes (see Workflow)
 | Durations for kits still in a stage | Median/p90/% over use completed stage instances only; Durations view also shows "open now" and "open over target" counts per stage |
 | Date filter | UTC calendar days on order `created_at` |
 | Turnaround colors | green = within target; yellow = completed over target; red = open over target (stuck); always with a day count |
+| Open stage on a refunded / cancelled order | Data layer keeps `open_over`/`open_ok`; UI renders it grey "closed (cancelled/refunded)", never red (124 cancelled never shipped) |
 
 ## Kit state & stuck definition
 
