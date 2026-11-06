@@ -115,3 +115,7 @@ The pipeline is built once per upload and memoized in `state/dataset`. Filters o
 ## Resolved
 
 - Open stage instances: completed-only stats + "open now / open over target" columns (decision table, 2026-11-06).
+
+## Backlog (deferred, in priority order)
+
+- Durations view: grouped bar chart of medians per stage × product (table ships first; chart was first on the cut list).
