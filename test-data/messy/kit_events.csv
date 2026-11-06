@@ -1,0 +1,46 @@
+﻿Event_Type,OCCURRED_AT,kit_id,order_id,event_id,source,extra
+ Kit_Shipped ,2026-03-02T08:00:00Z,k01,m01,e01,SYSTEM,
+kit_shipped,2026-03-02T03:00:00-05:00,k01,m01,e02,system,same instant other tz
+kit_shipped,2026-03-02T08:00:00Z,k01,m01,e03,system,exact dup
+kit_delivered,2026-03-05t10:00:00z,k01,m01,e04,carrier,lowercase t z
+kit_delivered,2026-03-06T10:00:00Z,k01,m01,e05,carrier,repeated stage later
+sample_mailed,2026-03-10T10:00:00.500Z,k01,m01,e06,carrier,
+sample_received,2026-03-15T10:00:00Z,k01,m01,e07,"lab, north",quoted unknown source
+qc_passed,2026-03-18T10:00:00Z,k01,m01,e08,lab,
+sequencing_complete,2026-04-20T10:00:00Z,k01,m01,e09,lab,
+report_ready,2026-04-30T12:00:00Z,k01,m01,e10,lab,asOf
+kit_shipped,2026-03-03 10:00:00,k02,m02,e11,system,naive
+sample_received,2026-03-12T10:00:00Z,k02,m02,e12,lab,received before mailed
+sample_mailed,2026-03-14T10:00:00Z,k02,m02,e13,carrier,out of order
+kit_delivered,2026-03-07T10:00:00Z,k01,m02,e14,carrier,kit belongs to m01
+kit_shipped,2026-03-05T10:00:00Z,k10,m10,e15,drone,unknown source
+kit_delivered,2026-03-08T10:00:00Z,k10,m10,e16,carrier,
+
+kit_shipped,2026-03-05T10:00:00Z,k11,m11,e17,system,upload_only event
+kit_shipped,2026-03-05T10:00:00Z,k13,m13,e18,system,
+kit_delivered,2026-03-07T10:00:00Z,k13,m13,e19,carrier,
+sample_mailed,2026-03-09T10:00:00Z,k13,m13,e20,carrier,
+kit_shipped,2026-03-05T10:00:00Z,k14,m14,e21,system,
+kit_shipped,2026-03-05T10:00:00Z,k16,m16,e22,system,
+kit_shipped,2026-03-05T00:00:00Z,k21a,m21,e23,system,before created (created 06:30Z)
+kit_replaced,2026-03-07T00:00:00Z,k21a,m21,e24,system,
+kit_delivered,2026-03-08T00:00:00Z,k21a,m21,e25,carrier,after replaced
+kit_shipped,2026-03-09T00:00:00Z,k21b,m21,e26,system,
+kit_shipped,2026-03-07T00:00:00Z,k22a,m22,e27,system,
+kit_shipped,2026-03-10T00:00:00Z,k22b,m22,e28,system,unlinked (test order)
+kit_shipped,2026-03-07T00:00:00Z,k23,m23,e29,system,
+kit_delivered,2026-03-09T00:00:00Z,k23,m23,e30,carrier,
+sample_mailed,2026-03-12T00:00:00Z,k23,m23,e31,carrier,
+sample_received,2026-03-16T00:00:00Z,k23,m23,e32,lab,
+qc_failed,2026-03-18T00:00:00Z,k23,m23,e33,lab,no replacement
+kit_shipped,2026-03-07T00:00:00Z,k24a,m24,e34,system,
+kit_shipped,2026-03-20T00:00:00Z,k24b,m24,e35,system,unlinked
+kit_shipped,2026-03-05T10:00:00Z,k99,ord_nope,e36,system,orphan
+kit_shipped,2026-03-05T10:00:00Z,,m01,e37,system,blank kit_id
+kit_shipped,2026-03-05T10:00:00Z,k98,,e38,system,blank order_id
+kit_lost,2026-03-05T10:00:00Z,k10,m10,e39,carrier,unknown event type
+kit_delivered,2026-03-09,k14,m14,e40,carrier,date-only
+kit_delivered,yesterday,k16,m16,e41,carrier,garbage ts
+kit_shipped,2026-03-05T10:00:00Z,k05,m05,e42,system,order excluded
+kit_delivered,2026-03-06T10:00:00Z
+kit_delivered,2026-03-31T25:00:00Z,k16,m16,e44,carrier,hour 25

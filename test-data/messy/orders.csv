@@ -1,0 +1,27 @@
+﻿ IS_TEST ,Created At,Order_ID,Product, Country ,status,customer_id,notes
+false,2026-03-01T10:00:00+02:00,m01, WGS_30X , us ,Paid,cus_01,"note, with comma"
+no,2026-03-02 09:15:00,m02,wgs_100x,GB,paid,cus_02,"multi
+line note"
+
+false,2026-03-03,m03,wgs_30x,US,paid,cus_03,date-only created_at
+false,not-a-date,m04,wgs_30x,US,paid,cus_04,garbage created_at
+false,2026-03-04T00:00:00Z,m05,wgs_50x,US,paid,cus_05,unknown product
+false,2026-03-04T00:00:00Z,m06,wgs_30x,US,pending,cus_06,unknown status
+maybe,2026-03-04T00:00:00Z,m07,wgs_30x,US,paid,cus_07,unknown is_test
+false,2026-03-04T00:00:00Z,,wgs_30x,US,paid,cus_08,blank order_id
+   
+true,2026-03-09T00:00:00Z,m01,wgs_100x,DE,paid,cus_dupe,duplicate order_id
+false,2026-03-04T00:00:00Z,m10,wgs_30x,,paid,,blank customer and country
+F,2026-03-04T00:00:00Z,m11,upload_only,NL,paid,cus_11,upload_only with events
+TRUE,2026-03-04T00:00:00Z,m12,wgs_30x,US,paid,cus_12,test order
+0,2026-03-04T00:00:00Z,m13,wgs_30x,US,REFUNDED,cus_13,refunded but progressed
+n,2026-03-04T00:00:00Z,m14,wgs_100x,<script>alert(1)</script>,paid,"=cmd|' /C calc'!A0",injection attempt
+false,2026-03-05T00:00:00Z,m15
+false,2026-03-05T00:00:00Z,m16,wgs_30x,CA,paid,cus_16,too many fields,extra1,extra2
+false,2026-03-05T00:00:00.123Z,m18,wgs_30x,JP,cancelled,cüs_ñ_日本,"a very long note xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+false,2026-01-01T00:00:00Z,m19,wgs_30x,US,paid,cus_19,paid kit order never shipped
+false,2026-12-01T00:00:00Z,m20,wgs_30x,US,paid,cus_20,created after asOf
+false,2026-03-06T12:00:00+05:30,m21,wgs_30x,IN,paid,cus_21,replaced then scanned again
+yes,2026-03-06T00:00:00Z,m22,wgs_100x,US,paid,cus_22,test with unlinked kits
+false,2026-03-06T00:00:00Z,m23,wgs_100x,AU,paid,cus_23,qc failed no replacement
+false,2026-03-06T00:00:00Z,m24,wgs_30x,US,paid,cus_24,unlinked second kit
