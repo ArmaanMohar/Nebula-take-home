@@ -1,0 +1,111 @@
+# Kit Lifecycle Dashboard — Project Rules
+
+## Context
+
+- Take-home challenge for Nebula Genomics (challenge.html). Hard timebox: 2 hours total.
+- Static, client-side web app for an ops team: pipeline overview, stage durations by product, stuck kits, order drill-down, filters, CSV upload.
+- Reviewers will upload THEIR OWN orders.csv + kit_events.csv (same columns, possibly messier). The app must never crash on upload. Handle errors gracefully.
+- Priority of work: correct numbers & core tests > robust parsing > usable stuck-kit workflow > visual polish.
+
+## Stack (do not change without asking)
+
+- Vite + React + TypeScript (`strict: true`), Tailwind, Papaparse, Recharts, Vitest.
+- Static deploy (netlify). No backend, no database, no auth, no SSR.
+- Do not add any dependency without asking me first.
+
+## Layout
+
+```
+src/lib/            pure data logic — NO React imports
+  types.ts          Order, KitEvent, Kit, DataQualityReport, ExclusionReason
+  config.ts         pipeline order, stage targets, stage owners
+  parse.ts          CSV → typed rows (header normalization, tolerant parsing)
+  clean.ts          normalization, dedupe, exclusions, flags
+  kits.ts           derive per-kit timeline, current stage, replacement links
+  metrics.ts        funnel, durations (median/p90/% over target), stuck list
+  __tests__/        Vitest tests
+  __tests__/fixtures/  tiny hand-written CSVs, one per rule
+src/views/          Overview, Durations, Stuck, OrderDetail, DataQuality
+src/components/     presentational only
+src/state/          filters (synced to URL query params), loaded dataset
+public/sample/      default orders.csv + kit_events.csv
+scripts/            throwaway analysis/verification scripts
+AI_NOTES.md         running log of AI mistakes (see Workflow)
+```
+
+## Hard rules — data
+
+1. **No wall-clock time in analysis.** Never use `Date.now()` / `new Date()` for metrics. `asOf` = max `occurred_at` across valid events (fallback: max `created_at`). The UI always shows "Data as of <asOf>".
+2. **Never silently drop a row.** Every exclusion goes through one function, `exclude(row, reason)`, that records into `DataQualityReport`. Reasons are a typed enum. Every flag (kept but suspicious) goes through `flag(row, reason)`.
+3. **Single source of truth for the pipeline.** Stage order, targets and owners live only in `config.ts`. No hard-coded day counts anywhere else. Avoid Magic numbers.
+4. **Time:** parse all timestamps to UTC. Durations are calendar days as fractional numbers; round only at display (1 decimal).
+5. **Layering:** single responsiblity -> components never compute metrics; they call selectors from `src/lib`. `src/lib` is pure and deterministic given (data, filters, asOf).
+6. **Tolerant parser:** handle BOM, CRLF, blank lines, quoted fields, header case/whitespace, reordered or extra columns. A missing required column produces a clear UI error message, never a crash or blank screen.
+7. **Unknown values** (event_type, product, status, source): trim + lowercase first; if still unrecognized → flag and exclude from pipeline math, don't throw.
+8. If you hit a data case not covered by the decisions below, **stop and ask me** with 2–3 options. Do not invent an assumption.
+9. Tests: core data layer only, no E2E/UI; one happy path, rest on messy-data edge cases.
+
+## Data decisions (change only with my approval; keep this table updated)
+
+> DRAFT. Confirm each row against the actual data in Plan step 1; propose changes, don't assume.
+
+| Case                                                          | Decision                                                                                                                                                                                                                 |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `is_test = true`                                              | Excluded by default; global toggle to include                                                                                                                                                                            |
+| `status` refunded / cancelled                                 | Counted in order volume and visible in order detail; excluded from stuck list and SLA/duration stats                                                                                                                     |
+| `product = upload_only`                                       | Counted in order volume; never enters the kit pipeline; not stuck for missing kit events                                                                                                                                 |
+| Exact duplicate events (same kit_id, event_type, occurred_at) | Deduped, counted in report                                                                                                                                                                                               |
+| Same stage event repeated at different times                  | Use FIRST occurrence for stage timing; flag the repeat                                                                                                                                                                   |
+| Events out of pipeline order (e.g. received before mailed)    | Keep event, flag kit; exclude the affected stage duration from stats                                                                                                                                                     |
+| Event with order_id not in orders.csv                         | Excluded, counted                                                                                                                                                                                                        |
+| Blank kit_id / unparseable timestamp                          | Excluded, counted                                                                                                                                                                                                        |
+| Event timestamp after asOf or before order created_at         | Flagged                                                                                                                                                                                                                  |
+| `kit_replaced`                                                | Closes the old kit (state: replaced, never stuck). Replacement kit = next kit_id on the same order whose first event is after the replaced event. Replacement kit's first stage is measured from the `kit_replaced` time |
+| `qc_failed` with no replacement                               | Open; owner = support; stuck if no replacement within QC target window                                                                                                                                                   |
+| Paid kit order with no events                                 | State "awaiting shipment"; stuck if > target for order→shipped                                                                                                                                                           |
+| Order-level turnaround                                        | order `created_at` → `report_ready` on the final kit                                                                                                                                                                     |
+
+## Kit state & stuck definition
+
+- Current stage = latest valid pipeline event on the kit.
+- Terminal states: `report_ready` (complete), `kit_replaced` (closed).
+- A kit is **stuck** when: order is paid, non-test, kit not terminal, and `asOf − time of last event` > target for the NEXT expected stage.
+- Show `days in stage`, `days over target`, and `owner` from config:
+  - awaiting shipment → fulfillment
+  - shipped → delivered → carrier
+  - delivered → sample mailed → customer
+  - mailed → received → carrier
+  - received → QC, QC passed → sequencing, sequencing → report → lab
+  - qc_failed → support
+
+## Hard rules — UI
+
+- Every view respects the global filters: date range (on order `created_at`), product, country, include-test toggle. Filters live in URL query params.
+- Every median / p90 shows its sample size `n`. Small n (< 5) is visually de-emphasized.
+- Durations view: median, p90 and % over target per stage, split by product, with the target shown.
+- Stuck view: sortable table, worst first, CSV export, row click → order detail.
+- Order detail: a timeline across all kits on the order, with replacement chain visible and flagged events marked.
+- Data Quality view: every exclusion/flag reason with counts and example rows.
+- For UI work: Aim for a professional ops tool that offers easy to use dashboard. No marketing-page styling.
+
+## Workflow
+
+- Before coding a feature, state the plan in ≤ 5 bullets and wait if it touches data decisions.
+- After every task, run `npm run typecheck && npm test`. Never say "done" while either fails.
+- Small commits, conventional messages (`feat:`, `fix:`, `test:`, `chore:`), one logical change each.
+- **When I correct you**, append an entry to `docs/AI_NOTES.md`: date/time, what you did, what was wrong, how it was caught. Keep it factual and terse. Do not soften it.
+- **Never write or edit `README.md`.** I write it myself.
+- Timebox awareness: if a task looks like > 15 minutes, say so and propose a smaller cut.
+- Prefer working + tested over feature-complete. Do not gold-plate.
+
+## Plan
+
+1. Use rules.md to analyze requirements and data. Confirm the plan covers every requirement in challenge.html. Confirm or revise the Data decisions table.
+2. Save the implementation plan in `docs/`.
+3. scaffold basic structure of app.
+4. data layer and tests. build one module at a time: parse, clean, state, metrics. Wait for review before moving on.
+5. UI views: create each view and wait for manual QA check.
+6. verify data using verify-metrics skill
+7. Create a messy CSV and test if app works
+8. leave 10 mins for me to manually write up README and deploy to netlify.
+9. Polish UI if time left.
