@@ -24,10 +24,10 @@ Running log of AI mistakes corrected by the developer.
 
 - **What I did:** In `src/lib/dataset.ts`, `explainUnknown` guesses which file an unrecognized upload was meant to be by picking the kind with the fewest missing columns.
 - **What was wrong:** For a 0-byte file every column is missing, so it always picks "events" (6 required columns vs 7). An empty `orders.csv` is reported as "The events file is empty or has no header row." That message is misleading.
-- **How it was caught:** My own messy-CSV upload test (step 7, `test-data/zero-bytes`), not by the developer. Not yet fixed.
+- **How it was caught:** My own messy-CSV upload test (step 7, `test-data/zero-bytes`), not by the developer. Fixed in `1a7332a`: an empty file is reported by its own name.
 
 ## 2026-11-06 12:12 — negative stage duration for an order created after asOf (self-caught)
 
 - **What I did:** In `src/lib/kits.ts`, `openInstance` computes an open stage's days as `asOf − start` with no guard. I applied the "after asOf → flag" decision as a flag only.
 - **What was wrong:** An order created after the data date gets an open Order → Shipped stage of −214.5 d, labelled "open, within target" and counted in Durations "Open now". I didn't think through what the flag means for stage timing.
-- **How it was caught:** My own messy-CSV upload test (step 7, order `m20` in `test-data/messy`), not by the developer. Not yet fixed.
+- **How it was caught:** My own messy-CSV upload test (step 7, order `m20` in `test-data/messy`), not by the developer. Fixed in `f358561`: a stage starting after asOf is "not started" (`starts_after_asof`) and the decision is in the table.
